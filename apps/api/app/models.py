@@ -49,9 +49,11 @@ class ScenarioResult(UUIDMixin, Base):
     __tablename__="scenario_results"; audit_id: Mapped[uuid.UUID]=mapped_column(ForeignKey("audits.id", ondelete="CASCADE"), index=True); scenario_id: Mapped[uuid.UUID]=mapped_column(ForeignKey("scenarios.id")); impact: Mapped[str]=mapped_column(Text); severity: Mapped[str]=mapped_column(String(20)); confidence: Mapped[float]=mapped_column(Float)
 
 def simple_model(name: str, tablename: str, fields: dict):
-    annotations={"__tablename__":str}
+    annotations = {}
     attrs={"__tablename__":tablename,"__annotations__":annotations}
-    for field,(annotation,column) in fields.items(): annotations[field]=annotation; attrs[field]=column
+    for field, (annotation, column) in fields.items():
+        annotations[field] = Mapped[annotation]
+        attrs[field] = column
     return type(name,(UUIDMixin,Base),attrs)
 
 Protocol=simple_model("Protocol","protocols",{"name":(str,mapped_column(String(120),unique=True)),"slug":(str,mapped_column(String(120),unique=True))})
