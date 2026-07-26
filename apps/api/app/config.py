@@ -1,4 +1,6 @@
 from functools import lru_cache
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -19,8 +21,27 @@ class Settings(BaseSettings):
     allowed_origins: str = "http://localhost:3000,http://localhost:5173"
     upload_max_bytes: int = 20 * 1024 * 1024
     upload_directory: str = "/tmp/realyield-uploads"
+
     def origins(self) -> list[str]:
         return [value.strip() for value in self.allowed_origins.split(",") if value.strip()]
+
+    def async_database_url(self) -> str:
+        url = self.database_url
+        if url.startswith("postgresql://"):
+            url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+
+        parts = urlsplit(url)
+        if parts.scheme != "postgresql+asyncpg":
+            return url
+
+        query = dict(parse_qsl(parts.query, keep_blank_values=True))
+        ssl_mode = query.pop("sslmode", None)
+        query.pop("channel_binding", None)
+        if ssl_mode:
+            query["ssl"] = ssl_mode
+        return urlunsplit(parts._replace(query=urlencode(query)))
 
 @lru_cache
 def get_settings() -> Settings:
