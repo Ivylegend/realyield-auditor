@@ -1,0 +1,3 @@
+from datetime import UTC,datetime
+def demo_report(audit_id:str)->dict:
+    return {"id":audit_id,"fictional":True,"name":"Atlas USD Real Yield Vault","protocol":"Atlas Finance","chain":"Ethereum","asset":"Atlas USD (fictional)","advertisedApy":18.4,"durableApy":6.9,"riskScore":68,"adjustedRisk":72,"completeness":84,"sustainabilityScore":42,"exitComplexity":71,"riskLevel":"Elevated","sustainability":"Incentive-dependent","confidence":"High","conclusion":"Evidence suggests 6.9% of the advertised 18.4% APY comes from lending demand and trading fees. The remaining 11.5% depends on reward emissions, recursive leverage, and a temporary campaign.","createdAt":datetime.now(UTC).isoformat()}

@@ -1,0 +1,21 @@
+[project]
+name = "realyield-api"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115", "uvicorn[standard]>=0.32", "sqlalchemy[asyncio]>=2.0.36",
+  "asyncpg>=0.30", "alembic>=1.14", "pydantic-settings>=2.7", "httpx>=0.28",
+  "redis>=5.2", "celery[redis]>=5.4", "python-jose[cryptography]>=3.3",
+  "passlib[argon2]>=1.7", "python-multipart>=0.0.20", "structlog>=24.4",
+  "slowapi>=0.1.9", "prometheus-client>=0.21", "eth-account>=0.13",
+]
+[project.optional-dependencies]
+test = ["pytest>=8.3", "pytest-asyncio>=0.25", "aiosqlite>=0.20"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

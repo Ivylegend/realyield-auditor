@@ -1,0 +1,82 @@
+export type AuditReport = ReturnType<typeof createDemoReport>;
+
+export function createDemoReport(id = crypto.randomUUID()) {
+  return {
+    id,
+    fictional: true,
+    name: "Atlas USD Real Yield Vault",
+    symbol: "aUSD-V",
+    protocol: "Atlas Finance",
+    chain: "Ethereum",
+    asset: "Atlas USD (fictional)",
+    advertisedApy: 18.4,
+    durableApy: 6.9,
+    riskScore: 68,
+    adjustedRisk: 72,
+    completeness: 84,
+    sustainabilityScore: 42,
+    exitComplexity: 71,
+    riskLevel: "Elevated",
+    sustainability: "Incentive-dependent",
+    confidence: "High",
+    conclusion:
+      "Evidence suggests 6.9% of the advertised 18.4% APY comes from lending demand and trading fees. The remaining 11.5% depends on reward emissions, recursive leverage, and a temporary campaign. Principal exposure is amplified by a centralized stablecoin issuer, an upgradeable vault, seven-day cooldown, and limited reward-token liquidity.",
+    components: [
+      { name: "Base lending", value: 4.1, kind: "productive", durable: true },
+      { name: "LP fees", value: 2.8, kind: "fees", durable: true },
+      { name: "ATLAS emissions", value: 6.5, kind: "incentive", durable: false },
+      { name: "Recursive leverage", value: 3.2, kind: "leverage", durable: false },
+      { name: "Campaign rewards", value: 1.8, kind: "temporary", durable: false },
+    ],
+    risks: [
+      { name: "Smart contract", score: 62, severity: "Elevated", evidence: 4, confidence: 88, weight: 14, explanation: "Upgradeable ERC-4626 vault; one strategy dependency lacks complete audit documentation." },
+      { name: "Exit & liquidity", score: 76, severity: "High", evidence: 3, confidence: 92, weight: 14, explanation: "Seven-day cooldown and limited ATLAS reward-token liquidity may increase slippage." },
+      { name: "Leverage", score: 74, severity: "High", evidence: 3, confidence: 90, weight: 12, explanation: "Recursive lending contributes 3.2 percentage points and amplifies liquidation sensitivity." },
+      { name: "Stablecoin", score: 64, severity: "Elevated", evidence: 3, confidence: 84, weight: 12, explanation: "Atlas USD relies on a fictional centralized issuer and redemption operations." },
+      { name: "Oracle", score: 58, severity: "Elevated", evidence: 2, confidence: 76, weight: 9, explanation: "Strategy health checks depend on a single primary price feed with a fallback." },
+      { name: "Governance", score: 55, severity: "Elevated", evidence: 2, confidence: 80, weight: 8, explanation: "A 3-of-5 multisig can upgrade the vault after a 24-hour delay." },
+      { name: "Data quality", score: 38, severity: "Moderate", evidence: 8, confidence: 84, weight: 8, explanation: "Most seeded claims are internally consistent; one audit artifact is incomplete." },
+    ],
+    nodes: [
+      { id: "deposit", label: "Your aUSD", type: "asset", x: 0, y: 130 },
+      { id: "vault", label: "Atlas Vault", type: "vault", x: 230, y: 130 },
+      { id: "lend", label: "Aegis Lending", type: "protocol", x: 470, y: 35 },
+      { id: "dex", label: "Meridian DEX", type: "protocol", x: 470, y: 135 },
+      { id: "oracle", label: "Primary Oracle", type: "oracle", x: 470, y: 235 },
+      { id: "reward", label: "ATLAS token", type: "risk", x: 710, y: 65 },
+      { id: "issuer", label: "aUSD issuer", type: "counterparty", x: 710, y: 205 },
+    ],
+    edges: [
+      ["deposit", "vault"], ["vault", "lend"], ["vault", "dex"], ["vault", "oracle"],
+      ["lend", "reward"], ["dex", "reward"], ["oracle", "issuer"], ["deposit", "issuer"],
+    ],
+    scenarios: [
+      { scenario: "ATLAS reward falls 50%", impact: "Realized APY falls and exits may face higher slippage.", severity: "High", affected: "Reward token · DEX", mitigation: "Value rewards at executable liquidity, not spot price.", confidence: "High" },
+      { scenario: "Incentives end", impact: "Modeled APY declines from 18.4% toward 10.1%; durable estimate remains 6.9%.", severity: "High", affected: "Vault · Treasury", mitigation: "Track emission schedule and exclude temporary rewards.", confidence: "High" },
+      { scenario: "aUSD depegs to $0.95", impact: "Principal value falls; recursive borrow health deteriorates.", severity: "Critical", affected: "Deposit · Lending · Issuer", mitigation: "Review redemption capacity and collateral triggers.", confidence: "Medium" },
+      { scenario: "Vault paused", impact: "New deposits stop and withdrawals may wait for governance action.", severity: "Elevated", affected: "Vault · Multisig", mitigation: "Confirm pause scope and emergency withdrawal path.", confidence: "Medium" },
+    ],
+    evidence: [
+      { source: "Atlas Vault API", claim: "Advertised APY is 18.4%.", freshness: "2 min", confidence: 96, status: "Verified", url: "#fictional-source" },
+      { source: "Aegis Lending Markets", claim: "Base supply yield contributes 4.1%.", freshness: "4 min", confidence: 91, status: "Verified", url: "#fictional-source" },
+      { source: "Meridian Pool Analytics", claim: "Trailing LP fees annualize to 2.8%.", freshness: "6 min", confidence: 86, status: "Observed", url: "#fictional-source" },
+      { source: "Atlas Emission Schedule", claim: "6.5% APY is ATLAS token emission.", freshness: "1 day", confidence: 94, status: "Verified", url: "#fictional-source" },
+      { source: "Vault contract metadata", claim: "Vault uses an upgradeable proxy and 3-of-5 multisig.", freshness: "8 min", confidence: 89, status: "Verified", url: "#fictional-source" },
+      { source: "Strategy audit index", claim: "One integrated strategy audit is incomplete.", freshness: "12 days", confidence: 77, status: "Unresolved", url: "#fictional-source" },
+    ],
+    unknowns: [
+      "The beneficial ownership and reserves of the fictional aUSD issuer could not be independently verified.",
+      "The incomplete strategy audit does not cover the latest vault upgrade.",
+      "Executable ATLAS liquidity during stressed conditions is unknown.",
+    ],
+    checklist: [
+      "Verify the vault and asset contract addresses",
+      "Confirm the seven-day withdrawal cooldown and emergency path",
+      "Review the current vault implementation and proxy admin",
+      "Exclude token incentives when comparing durable yield",
+      "Test reward-token liquidity at the intended position size",
+      "Review aUSD redemption terms and issuer attestations",
+    ],
+    createdAt: new Date().toISOString(),
+  };
+}
