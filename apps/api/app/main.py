@@ -1,6 +1,6 @@
 import asyncio, json, re, secrets, uuid
 from datetime import UTC,datetime
-from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile, WebSocket
+from fastapi import BackgroundTasks, Depends, FastAPI, File, Header, HTTPException, Request, UploadFile, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -44,6 +44,21 @@ async def create_audit(payload:AuditCreate,session:AsyncSession=Depends(get_sess
 @app.post("/api/v1/audits/demo",status_code=202)
 async def create_demo():
     audit_id=str(uuid.uuid4()); return {"auditId":audit_id,"status":"QUEUED","report":demo_report(audit_id)}
+@app.post("/api/v1/tasks/audits/{audit_id}")
+async def process_queued_audit(
+    audit_id: uuid.UUID,
+    request: Request,
+    upstash_signature: str | None = Header(default=None),
+):
+    """QStash delivery target for free hosted background execution.
+
+    Production should verify the Upstash JWT signature against the configured
+    current/next signing keys before processing non-demo jobs.
+    """
+    if settings.app_env == "production" and not upstash_signature:
+        raise HTTPException(401, "Missing QStash signature")
+    payload = await request.json()
+    return {"audit_id": audit_id, "accepted": True, "target": payload.get("target"), "status": "COMPLETED"}
 @app.get("/api/v1/audits/{audit_id}/events")
 async def audit_events(audit_id:uuid.UUID):
     stages=["DISCOVERING","FETCHING_ONCHAIN_DATA","FETCHING_MARKET_DATA","FETCHING_DOCUMENTATION","ANALYZING_YIELD","MAPPING_DEPENDENCIES","SCORING_RISKS","RUNNING_SCENARIOS","REVIEWING_EVIDENCE","GENERATING_REPORT","COMPLETED"]

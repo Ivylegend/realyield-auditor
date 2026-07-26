@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     app_url: str = "http://localhost:3000"
     database_url: str = "sqlite+aiosqlite:///./realyield.db"
     redis_url: str = "redis://localhost:6379/0"
+    qstash_token: str = ""
+    qstash_current_signing_key: str = ""
+    qstash_next_signing_key: str = ""
     jwt_secret: str = "development-only-change-me-32-characters"
     jwt_refresh_secret: str = "development-refresh-change-me-32-chars"
     jwt_access_token_expire_minutes: int = 15
